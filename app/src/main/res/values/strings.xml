@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">RxApp</string>
+
+    // replace with yours
+    <string name="github_oauth_token"><!-- InsertYoursHere --></string>
+
+    <string name="action_refresh">Refresh</string>
+</resources>
