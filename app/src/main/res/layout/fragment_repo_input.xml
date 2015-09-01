@@ -1,0 +1,57 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             tools:context="net.pmellaaho.rxapp.ui.RepoInputFragment">
+
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:background="@android:color/darker_gray"
+        android:columnCount="3"
+        android:useDefaultMargins="true">
+
+        <Button
+            android:id="@+id/startBtn"
+            android:layout_column="0"
+            android:layout_rowSpan="2"
+            android:text="Start"/>
+
+        <TextView
+            android:layout_column="1"
+            android:layout_columnSpan="2"
+            android:text="Show the contributors to open source projects by Square"
+            android:textAppearance="@android:style/TextAppearance.Medium"/>
+
+        <TextView
+            android:layout_column="1"
+            android:text="Repo:"
+            android:textAppearance="@android:style/TextAppearance.Medium"/>
+
+        <EditText
+            android:id="@+id/repoEdit"
+            android:layout_column="2"
+            android:hint="type repo"
+            android:lines="1"
+            android:textAppearance="@android:style/TextAppearance.Medium"/>
+
+    </GridLayout>
+
+    <ProgressBar
+        android:id="@+id/progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="invisible"/>
+
+    <TextView
+        android:id="@+id/errorText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Error fetching data"
+        android:textAppearance="?attr/textAppearanceLargePopupMenu"
+        android:visibility="invisible"/>
+
+</FrameLayout>

@@ -20,6 +20,9 @@ public class ContributorsModel {
     // and only after that source Observable completes.
     private AsyncSubject<List<Contributor>> mAsyncSubject;
 
+    private String mOwner;
+    private String mRepo;
+
     @Inject
     public ContributorsModel(GitHubApi api) {
         mApi = api;
@@ -27,6 +30,8 @@ public class ContributorsModel {
 
     public void reset() {
         mAsyncSubject = null;
+        mOwner = null;
+        mRepo = null;
     }
 
     public Observable<List<Contributor>> getRequest() {
@@ -34,6 +39,17 @@ public class ContributorsModel {
     }
 
     public Observable<List<Contributor>> getContributors(String owner, String repo) {
+
+        if (mOwner == null || mRepo == null) {
+            mOwner = owner;
+            mRepo = repo;
+
+        } else if (!mOwner.equals(owner) || !mRepo.equals(repo)) {
+            // can't use cached data
+            mAsyncSubject = null;
+            mOwner = owner;
+            mRepo = repo;
+        }
 
         if (mAsyncSubject == null) {
             mAsyncSubject = AsyncSubject.create();
@@ -43,13 +59,4 @@ public class ContributorsModel {
         }
         return mAsyncSubject;
     }
-
-    public boolean hasCachedData() {
-        return mAsyncSubject != null;
-    }
-
-    public boolean requestPending() {
-        return mAsyncSubject != null && !mAsyncSubject.hasCompleted();
-    }
-
 }
