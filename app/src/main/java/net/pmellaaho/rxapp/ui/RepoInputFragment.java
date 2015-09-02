@@ -168,6 +168,8 @@ public class RepoInputFragment extends Fragment {
             Timber.e(e, "request failed");
             mProgress.setVisibility(View.INVISIBLE);
             mErrorText.setVisibility(View.VISIBLE);
+            mButton.setEnabled(true);
+            mModel.reset();
         }
     }
     
