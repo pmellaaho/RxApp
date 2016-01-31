@@ -1,10 +1,10 @@
 package net.pmellaaho.rxapp.ui;
 
 import android.app.Activity;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +16,7 @@ import com.squareup.leakcanary.RefWatcher;
 
 import net.pmellaaho.rxapp.R;
 import net.pmellaaho.rxapp.RxApp;
+import net.pmellaaho.rxapp.databinding.FragmentRepoInputBinding;
 import net.pmellaaho.rxapp.model.Contributor;
 import net.pmellaaho.rxapp.model.ContributorsModel;
 
@@ -48,26 +49,23 @@ public class RepoInputFragment extends Fragment {
         void onDataReady(String repo);
     }
 
-    private TextWatcher mRepoWatcher = new TextWatcher() {
-
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+    public class MyHandler {
+        public void clicked(View v) {
+            mButton.setEnabled(false);
+            fetchData();
         }
 
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-        }
-
-        @Override
         public void afterTextChanged(Editable s) {
             String newRepo = s.toString();
 
             if (!isNullOrEmpty(newRepo)) {
                 mButton.setEnabled(true);
+            } else {
+                mButton.setEnabled(false);
             }
         }
     };
-    
+
     public RepoInputFragment() {
     }
 
@@ -81,35 +79,30 @@ public class RepoInputFragment extends Fragment {
         RefWatcher refWatcher = RxApp.getRefWatcher();
         refWatcher.watch(this);
     }
-    
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_repo_input, container, false);
 
-        mButton = (Button) root.findViewById(R.id.startBtn);
-        mButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mButton.setEnabled(false);
-                fetchData();
-            }
-        });
+        FragmentRepoInputBinding binding = DataBindingUtil.inflate(inflater, R.layout
+                .fragment_repo_input, container, false);
 
-        mRepoEdit = (EditText) root.findViewById(R.id.repoEdit);
-        mRepoEdit.addTextChangedListener(mRepoWatcher);
+        binding.setHandler(new MyHandler());
+
+        mButton = binding.startBtn;
+        mRepoEdit = binding.repoEdit;
         if (savedInstanceState == null) {
             mRepoEdit.setText(REPO);
         }
 
-        mProgress = (ProgressBar) root.findViewById(R.id.progress);
-        mErrorText = root.findViewById(R.id.errorText);
+        mProgress = binding.progress;
+        mErrorText = binding.errorText;
 
-        mModel = ((RxApp)getActivity().getApplication()).component().contributorsModel();
-        return root;
+        mModel = ((RxApp) getActivity().getApplication()).component().contributorsModel();
+        return binding.getRoot();
     }
-    
+
     private void fetchData() {
         Timber.d("Fetch data from RepoInputFragment");
         mRequestPending = true;
@@ -172,7 +165,7 @@ public class RepoInputFragment extends Fragment {
             mModel.reset();
         }
     }
-    
+
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -183,7 +176,7 @@ public class RepoInputFragment extends Fragment {
                     + " must implement OnRepoInputListener");
         }
     }
-    
+
     @Override
     public void onDetach() {
         super.onDetach();
