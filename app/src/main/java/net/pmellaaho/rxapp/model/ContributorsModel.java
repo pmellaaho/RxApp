@@ -8,6 +8,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import rx.Observable;
+import rx.schedulers.Schedulers;
 import rx.subjects.AsyncSubject;
 
 @Singleton
@@ -55,6 +56,7 @@ public class ContributorsModel {
             mAsyncSubject = AsyncSubject.create();
 
             mApi.contributors(owner, repo)
+                    .subscribeOn(Schedulers.io())
                     .subscribe(mAsyncSubject);
         }
         return mAsyncSubject;

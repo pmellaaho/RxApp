@@ -1,9 +1,5 @@
 package net.pmellaaho.rxapp.network;
 
-import com.squareup.okhttp.Interceptor;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
 
 import net.pmellaaho.rxapp.R;
 import net.pmellaaho.rxapp.RxApp;
@@ -12,9 +8,13 @@ import java.io.IOException;
 
 import dagger.Module;
 import dagger.Provides;
-import retrofit.GsonConverterFactory;
-import retrofit.Retrofit;
-import retrofit.RxJavaCallAdapterFactory;
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import retrofit2.GsonConverterFactory;
+import retrofit2.Retrofit;
+import retrofit2.RxJavaCallAdapterFactory;
 import timber.log.Timber;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
