@@ -24,7 +24,7 @@ import static java.lang.String.format;
 public class NetworkModule {
 
     @Provides
-    GitHubApi provideGitHubApi() {
+    public GitHubApi provideGitHubApi() {
         final String GITHUB_ENDPOINT = "https://api.github.com/";
         OkHttpClient okHttpClient = new OkHttpClient();
 
