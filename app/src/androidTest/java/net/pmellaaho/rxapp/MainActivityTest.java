@@ -87,9 +87,8 @@ public class MainActivityTest {
             List<Contributor> tmpList = new ArrayList<>();
             tmpList.add(new Contributor("Jesse", 600));
             tmpList.add(new Contributor("Jake", 200));
-            Observable<List<Contributor>> testObservable = Observable.just(tmpList);
 
-            return mDelegate.returningResponse(testObservable).contributors(owner, repo);
+            return mDelegate.returningResponse(tmpList).contributors(owner, repo);
         }
     }
 
