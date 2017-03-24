@@ -12,6 +12,7 @@ import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -26,14 +27,13 @@ public class NetworkModule {
     @Provides
     GitHubApi provideGitHubApi() {
         final String GITHUB_ENDPOINT = "https://api.github.com/";
-        OkHttpClient okHttpClient = new OkHttpClient();
+        OkHttpClient.Builder builder = new OkHttpClient.Builder();
 
         final String githubToken = RxApp.get().getResources().getString(R.string
                 .github_oauth_token);
 
         if (!isNullOrEmpty(githubToken)) {
-
-            okHttpClient.networkInterceptors().add(new Interceptor() {
+            builder.addNetworkInterceptor(new Interceptor() {
                 @Override
                 public Response intercept(Chain chain) throws IOException {
                     Request originalRequest = chain.request();
@@ -44,20 +44,22 @@ public class NetworkModule {
                     return chain.proceed(authorizedRequest);
                 }
             });
-
-            okHttpClient.networkInterceptors().add(new Interceptor() {
-                @Override
-                public Response intercept(Chain chain) throws IOException {
-                    Request request = chain.request();
-                    Timber.d("Sending request: " + request.url() + " with headers: " + request.headers());
-                    return chain.proceed(request);
-                }
-            });
         }
+
+        builder.addNetworkInterceptor(new Interceptor() {
+            @Override
+            public Response intercept(Chain chain) throws IOException {
+                Request request = chain.request();
+                Timber.d("Sending request: " + request.url() + " with headers: " + request.headers());
+                return chain.proceed(request);
+            }
+        });
+
+        builder.addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY));
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(GITHUB_ENDPOINT)
-                .client(okHttpClient)
+                .client(builder.build())
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .build();

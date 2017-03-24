@@ -5,21 +5,12 @@ import android.app.Application;
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
 
-import net.pmellaaho.rxapp.model.ContributorsModel;
-import net.pmellaaho.rxapp.network.NetworkModule;
+import net.pmellaaho.rxapp.network.DaggerNetworkComponent;
+import net.pmellaaho.rxapp.network.NetworkComponent;
 
-import javax.inject.Singleton;
-
-import dagger.Component;
 import timber.log.Timber;
 
 public class RxApp extends Application {
-
-    @Singleton
-    @Component(modules = NetworkModule.class)
-    public interface NetworkComponent {
-        ContributorsModel contributorsModel();
-    }
 
     private NetworkComponent mComponent = null;
 
@@ -38,7 +29,7 @@ public class RxApp extends Application {
         super.onCreate();
 
         if (mComponent == null) {
-            mComponent = DaggerRxApp_NetworkComponent.create();
+            mComponent = DaggerNetworkComponent.create();
         }
 
         sInstance = (RxApp) getApplicationContext();

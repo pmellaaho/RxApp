@@ -9,6 +9,7 @@ import android.support.test.runner.AndroidJUnit4;
 
 import net.pmellaaho.rxapp.model.Contributor;
 import net.pmellaaho.rxapp.model.ContributorsModel;
+import net.pmellaaho.rxapp.network.NetworkComponent;
 import net.pmellaaho.rxapp.ui.MainActivity;
 
 import org.junit.Before;
@@ -41,7 +42,7 @@ public class MainActivityTest {
 
     @Singleton
     @Component(modules = MockNetworkModule.class)
-    public interface MockNetworkComponent extends RxApp.NetworkComponent {
+    public interface MockNetworkComponent extends NetworkComponent {
     }
 
     @Rule
