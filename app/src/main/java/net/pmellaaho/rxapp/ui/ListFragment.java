@@ -1,7 +1,5 @@
 package net.pmellaaho.rxapp.ui;
 
-import android.app.Activity;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -24,9 +22,9 @@ import net.pmellaaho.rxapp.model.ContributorsModel;
 
 import java.util.List;
 
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.subscriptions.CompositeSubscription;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.observers.DisposableObserver;
 import timber.log.Timber;
 
 public class ListFragment extends Fragment {
@@ -37,12 +35,12 @@ public class ListFragment extends Fragment {
     private ContributorsAdapter mAdapter;
     private ProgressBar mProgress;
 
-    private CompositeSubscription mSubscriptions = new CompositeSubscription();
+    private CompositeDisposable mDisposables = new CompositeDisposable();
     ContributorsModel mModel;
-    
+
     private String mOwner;
     private String mRepo;
-    
+
     public static ListFragment newInstance(String owner, String repo) {
         ListFragment fragment = new ListFragment();
         Bundle args = new Bundle();
@@ -51,10 +49,10 @@ public class ListFragment extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
-    
+
     public ListFragment() {
     }
-    
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,7 +61,7 @@ public class ListFragment extends Fragment {
             mRepo = getArguments().getString(ARG_REPO);
         }
     }
-    
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -79,7 +77,7 @@ public class ListFragment extends Fragment {
         mList.setAdapter(mAdapter);
         mList.setItemAnimator(new DefaultItemAnimator());
 
-        mModel = ((RxApp)getActivity().getApplication()).component().contributorsModel();
+        mModel = ((RxApp) getActivity().getApplication()).component().contributorsModel();
         setHasOptionsMenu(true);
         return root;
     }
@@ -95,7 +93,7 @@ public class ListFragment extends Fragment {
         super.onDestroy();
         Timber.d("unsubscribe");
 
-        mSubscriptions.unsubscribe();
+        mDisposables.dispose();
 
         RefWatcher refWatcher = RxApp.getRefWatcher();
         refWatcher.watch(this);
@@ -106,13 +104,13 @@ public class ListFragment extends Fragment {
         mProgress.setVisibility(View.VISIBLE);
         mList.setVisibility(View.INVISIBLE);
 
-        mSubscriptions.add(
+        mDisposables.add(
                 mModel.getContributors(mOwner, mRepo)
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new ContributorsSubscriber()));
+                        .subscribeWith(new ContributorsObserver()));
     }
 
-    private class ContributorsSubscriber extends Subscriber<List<Contributor>> {
+    private class ContributorsObserver extends DisposableObserver<List<Contributor>> {
 
         @Override
         public void onNext(List<Contributor> contributors) {
@@ -121,7 +119,7 @@ public class ListFragment extends Fragment {
         }
 
         @Override
-        public void onCompleted() {
+        public void onComplete() {
             Timber.d("request completed");
             mProgress.setVisibility(View.INVISIBLE);
             mList.setVisibility(View.VISIBLE);

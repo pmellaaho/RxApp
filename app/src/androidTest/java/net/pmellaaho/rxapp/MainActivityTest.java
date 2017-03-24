@@ -24,7 +24,7 @@ import java.util.List;
 import javax.inject.Singleton;
 
 import dagger.Component;
-import rx.Observable;
+import io.reactivex.Observable;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;

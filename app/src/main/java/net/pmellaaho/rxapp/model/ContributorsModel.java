@@ -7,9 +7,9 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import rx.Observable;
-import rx.schedulers.Schedulers;
-import rx.subjects.AsyncSubject;
+import io.reactivex.Observable;
+import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subjects.AsyncSubject;
 
 @Singleton
 public class ContributorsModel {

@@ -22,9 +22,9 @@ import net.pmellaaho.rxapp.model.ContributorsModel;
 
 import java.util.List;
 
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.subscriptions.CompositeSubscription;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.observers.DisposableObserver;
 import timber.log.Timber;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
@@ -41,7 +41,8 @@ public class RepoInputFragment extends Fragment {
     private ProgressBar mProgress;
     private View mErrorText;
 
-    private CompositeSubscription mSubscriptions = new CompositeSubscription();
+    private CompositeDisposable mDisposables = new CompositeDisposable();
+
     ContributorsModel mModel;
     private boolean mRequestPending;
 
@@ -74,7 +75,7 @@ public class RepoInputFragment extends Fragment {
         super.onDestroy();
         Timber.d("unsubscribe");
 
-        mSubscriptions.unsubscribe();
+        mDisposables.dispose();
 
         RefWatcher refWatcher = RxApp.getRefWatcher();
         refWatcher.watch(this);
@@ -109,10 +110,10 @@ public class RepoInputFragment extends Fragment {
         mProgress.setVisibility(View.VISIBLE);
         mErrorText.setVisibility(View.INVISIBLE);
 
-        mSubscriptions.add(
+        mDisposables.add(
                 mModel.getContributors(OWNER, mRepoEdit.getText().toString())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new ContributorsSubscriber()));
+                        .subscribeWith(new ContributorsSubscriber()));
     }
 
 
@@ -130,15 +131,15 @@ public class RepoInputFragment extends Fragment {
 
             if (mModel.getRequest() != null) {
                 Timber.d("Subscribe to pending request");
-                mSubscriptions.add(
+                mDisposables.add(
                         mModel.getRequest()
                                 .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(new ContributorsSubscriber()));
+                                .subscribeWith(new ContributorsSubscriber()));
             }
         }
     }
 
-    private class ContributorsSubscriber extends Subscriber<List<Contributor>> {
+    private class ContributorsSubscriber extends DisposableObserver<List<Contributor>> {
 
         @Override
         public void onNext(List<Contributor> contributors) {
@@ -146,7 +147,7 @@ public class RepoInputFragment extends Fragment {
         }
 
         @Override
-        public void onCompleted() {
+        public void onComplete() {
             Timber.d("request completed");
             mRequestPending = false;
             mProgress.setVisibility(View.INVISIBLE);

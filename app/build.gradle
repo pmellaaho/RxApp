@@ -29,6 +29,10 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_7
         targetCompatibility JavaVersion.VERSION_1_7
     }
+
+    packagingOptions {
+        exclude 'META-INF/rxjava.properties'
+    }
 }
 
 dependencies {
@@ -45,15 +49,16 @@ dependencies {
     compile 'com.android.support:support-v13:' + supportLibVer
     compile 'com.android.support:appcompat-v7:' + supportLibVer
 
-    compile 'io.reactivex:rxjava:1.1.0'
-    compile 'io.reactivex:rxandroid:1.1.0'
+    compile 'io.reactivex.rxjava2:rxjava:2.0.7'
+    compile 'io.reactivex.rxjava2:rxjava:2.0.7'
+    compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
 
     compile 'com.squareup.okhttp3:okhttp:3.5.0'
     compile 'com.squareup.okhttp3:logging-interceptor:3.5.0'
-    compile 'com.squareup.retrofit2:retrofit:2.1.0'
-    compile 'com.squareup.retrofit2:adapter-rxjava:2.1.0'
-    compile 'com.squareup.retrofit2:converter-gson:2.1.0'
-    compile 'com.squareup.retrofit2:retrofit-mock:2.1.0'
+    compile 'com.squareup.retrofit2:retrofit:2.2.0'
+    compile 'com.squareup.retrofit2:adapter-rxjava2:2.2.0'
+    compile 'com.squareup.retrofit2:converter-gson:2.2.0'
+    compile 'com.squareup.retrofit2:retrofit-mock:2.2.0'
     compile 'com.jakewharton.timber:timber:3.1.0'
 
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.3.1'
@@ -67,13 +72,14 @@ dependencies {
     androidTestCompile 'com.google.dexmaker:dexmaker:1.2'
     androidTestCompile 'com.google.dexmaker:dexmaker-mockito:1.2:'
 
+    // Espresso UI Testing
     androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2'
-    androidTestCompile('com.android.support.test.espresso:espresso-contrib:2.2') {
-        exclude group: 'com.android.support', module: 'appcompat'
-        exclude group: 'com.android.support', module: 'support-v4'
-        exclude module: 'recyclerview-v7'
-    }
+    androidTestCompile 'com.android.support.test.espresso:espresso-contrib:2.2'
+
+    // Resolve conflicts between main and test APK:
+    androidTestCompile 'com.android.support:recyclerview-v7:' + supportLibVer
+    androidTestCompile 'com.android.support:support-v13:' + supportLibVer
+    androidTestCompile 'com.android.support:appcompat-v7:' + supportLibVer
 
     androidTestAnnotationProcessor "com.google.dagger:dagger-compiler:2.8"
-
 }
