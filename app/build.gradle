@@ -1,12 +1,13 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion 29
-    buildToolsVersion "25.0.2"
 
     defaultConfig {
         applicationId "net.pmellaaho.rxapp"
-        minSdkVersion 15
+        minSdkVersion 24
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
@@ -30,6 +31,10 @@ android {
         encoding "UTF-8"
     }
 
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
     packagingOptions {
         exclude 'META-INF/rxjava.properties'
     }
@@ -40,7 +45,7 @@ dependencies {
 
     // Dagger dependencies
     implementation 'com.google.dagger:dagger:2.35'
-    annotationProcessor 'com.google.dagger:dagger-compiler:2.35'
+    kapt 'com.google.dagger:dagger-compiler:2.35'
 
     implementation 'com.google.guava:guava:18.0'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
@@ -73,13 +78,14 @@ dependencies {
     androidTestImplementation 'com.google.dexmaker:dexmaker-mockito:1.2:'
 
     // Espresso UI Testing
-//    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
-//    androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.1.0'
-
-    // Espresso UI Testing
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
     androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.3.0'
 
-//    androidTestAnnotationProcessor "com.google.dagger:dagger-compiler:2.8"
-    androidTestAnnotationProcessor 'com.google.dagger:dagger-compiler:2.35'
+    // Barista
+    androidTestImplementation('com.schibsted.spain:barista:3.7.0') {
+        exclude group: 'org.jetbrains.kotlin' // Only if you already use Kotlin in your project
+    }
+
+    kaptAndroidTest 'com.google.dagger:dagger-compiler:2.35'
+//    androidTestImplementation 'com.google.guava:guava:28.2-android'
 }

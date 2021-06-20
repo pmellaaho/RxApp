@@ -1,117 +1,97 @@
-package net.pmellaaho.rxapp;
+package net.pmellaaho.rxapp
 
-import android.app.Instrumentation;
-import android.content.Intent;
+import android.content.Intent
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.rule.ActivityTestRule
+import com.schibsted.spain.barista.assertion.BaristaListAssertions.assertDisplayedAtPosition
+import com.schibsted.spain.barista.assertion.BaristaVisibilityAssertions.assertDisplayed
+import com.schibsted.spain.barista.interaction.BaristaClickInteractions.clickOn
+import dagger.Component
+import io.reactivex.Observable
+import net.pmellaaho.rxapp.model.Contributor
+import net.pmellaaho.rxapp.model.ContributorsModel
+import net.pmellaaho.rxapp.network.NetworkComponent
+import net.pmellaaho.rxapp.ui.MainActivity
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.mockito.Matchers
+import org.mockito.Mockito
+import java.util.*
+import javax.inject.Singleton
 
-import androidx.test.ext.junit.runners.AndroidJUnit4;
-import androidx.test.platform.app.InstrumentationRegistry;
-import androidx.test.rule.ActivityTestRule;
-
-import net.pmellaaho.rxapp.model.Contributor;
-import net.pmellaaho.rxapp.model.ContributorsModel;
-import net.pmellaaho.rxapp.network.NetworkComponent;
-import net.pmellaaho.rxapp.ui.MainActivity;
-
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mockito;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.inject.Singleton;
-
-import dagger.Component;
-import io.reactivex.Observable;
-
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static org.mockito.Matchers.anyString;
-
-@RunWith(AndroidJUnit4.class)
-public class MainActivityTest {
-
-    ContributorsModel mModel;
+@RunWith(AndroidJUnit4::class)
+class MainActivityTest {
+    var model: ContributorsModel? = null
 
     @Singleton
-    @Component(modules = MockNetworkModule.class)
-    public interface MockNetworkComponent extends NetworkComponent {
-    }
+    @Component(modules = [MockNetworkModule::class])
+    interface MockNetworkComponent : NetworkComponent
 
     @Rule
-    public ActivityTestRule<MainActivity> mActivityRule = new ActivityTestRule<>(
-            MainActivity.class,
-            true,     // initialTouchMode
-            false);   // launchActivity.
+    @JvmField
+    var mActivityRule = ActivityTestRule(
+        MainActivity::class.java,
+        true,  // initialTouchMode
+        false
+    ) // launchActivity.
 
     @Before
-    public void setUp() {
-        Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
-        RxApp app = (RxApp) instrumentation.getTargetContext()
-                .getApplicationContext();
-
-        MockNetworkComponent testComponent = DaggerMainActivityTest_MockNetworkComponent.builder()
-                .mockNetworkModule(new MockNetworkModule())
-                .build();
-        app.setComponent(testComponent);
-        mModel = testComponent.contributorsModel();
+    fun setUp() {
+        val instrumentation = InstrumentationRegistry.getInstrumentation()
+        val app = instrumentation.targetContext
+            .applicationContext as RxApp
+        val testComponent = DaggerMainActivityTest_MockNetworkComponent.builder()
+            .mockNetworkModule(MockNetworkModule())
+            .build()
+        app.setComponent(testComponent)
+        model = testComponent.contributorsModel()
     }
 
     @Test
-    public void listWithTwoContributors() {
+    fun listWithTwoContributors() {
 
         // GIVEN
-        List<Contributor> tmpList = new ArrayList<>();
-        tmpList.add(new Contributor("Jesse", 600));
-        tmpList.add(new Contributor("Jake", 200));
-
-        Observable<List<Contributor>> testObservable = Observable.just(tmpList);
-
-        Mockito.when(mModel.getContributors(anyString(), anyString()))
-                .thenReturn(testObservable);
+        val tmpList: MutableList<Contributor> = ArrayList()
+        tmpList.add(Contributor("Jesse", 600))
+        tmpList.add(Contributor("Jake", 200))
+        val testObservable = Observable.just<List<Contributor>>(tmpList)
+        Mockito.`when`(
+            model!!.getContributors(Matchers.anyString(), Matchers.anyString())
+        )
+            .thenReturn(testObservable)
 
         // WHEN
-        mActivityRule.launchActivity(new Intent());
-        onView(withId(R.id.startBtn)).perform(click());
+        mActivityRule.launchActivity(Intent())
+        clickOn(R.id.startBtn)
 
         // THEN
-        onView(ViewMatchers.nthChildOf(withId(R.id.recyclerView), 0))
-                .check(matches(hasDescendant(withText("Jesse"))));
+        assertDisplayedAtPosition(R.id.recyclerView, 0, "Jesse")
+        assertDisplayedAtPosition(R.id.recyclerView, 0, "600")
 
-        onView(ViewMatchers.nthChildOf(withId(R.id.recyclerView), 0))
-                .check(matches(hasDescendant(withText("600"))));
-
-        onView(ViewMatchers.nthChildOf(withId(R.id.recyclerView), 1))
-                .check(matches(hasDescendant(withText("Jake"))));
-
-        onView(ViewMatchers.nthChildOf(withId(R.id.recyclerView), 1))
-                .check(matches(hasDescendant(withText("200"))));
+        assertDisplayedAtPosition(R.id.recyclerView, 1, "Jake")
+        assertDisplayedAtPosition(R.id.recyclerView, 1, "200")
     }
 
     @Test
-    public void errorFromNetwork() {
+    fun errorFromNetwork() {
 
         // GIVEN
         // create an Observable that emits nothing and then signals an error
-        Observable<List<Contributor>> errorEmittingObservable =
-                Observable.error(new IllegalArgumentException());
-
-        Mockito.when(mModel.getContributors(anyString(), anyString()))
-                .thenReturn(errorEmittingObservable);
+        val errorEmittingObservable =
+            Observable.error<List<Contributor>>(IllegalArgumentException())
+        Mockito.`when`(
+            model!!.getContributors(Matchers.anyString(), Matchers.anyString())
+        )
+            .thenReturn(errorEmittingObservable)
 
         // WHEN
-        mActivityRule.launchActivity(new Intent());
-        onView(withId(R.id.startBtn)).perform(click());
+        mActivityRule.launchActivity(Intent())
+        clickOn(R.id.startBtn)
 
         // THEN
-        onView(withId(R.id.errorText))
-                .check(matches(isDisplayed()));
+        assertDisplayed(R.id.errorText)
     }
 }
