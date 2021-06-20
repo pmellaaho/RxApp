@@ -1,15 +1,16 @@
 package net.pmellaaho.rxapp.ui;
 
-import android.databinding.DataBindingUtil;
-import android.support.annotation.UiThread;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import net.pmellaaho.rxapp.model.Contributor;
+import androidx.annotation.UiThread;
+import androidx.databinding.DataBindingUtil;
+import androidx.recyclerview.widget.RecyclerView;
+
 import net.pmellaaho.rxapp.R;
 import net.pmellaaho.rxapp.databinding.ListItemBinding;
+import net.pmellaaho.rxapp.model.Contributor;
 
 import java.util.ArrayList;
 import java.util.List;

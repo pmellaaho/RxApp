@@ -1,9 +1,7 @@
 package net.pmellaaho.rxapp.ui;
 
 import android.app.Activity;
-import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,7 +10,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 
-import com.squareup.leakcanary.RefWatcher;
+import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.Fragment;
 
 import net.pmellaaho.rxapp.R;
 import net.pmellaaho.rxapp.RxApp;
@@ -65,7 +64,7 @@ public class RepoInputFragment extends Fragment {
                 mButton.setEnabled(false);
             }
         }
-    };
+    }
 
     public RepoInputFragment() {
     }
@@ -74,11 +73,7 @@ public class RepoInputFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         Timber.d("unsubscribe");
-
         mDisposables.dispose();
-
-        RefWatcher refWatcher = RxApp.getRefWatcher();
-        refWatcher.watch(this);
     }
 
 

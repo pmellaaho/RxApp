@@ -3,9 +3,9 @@ package net.pmellaaho.rxapp;
 import android.app.Instrumentation;
 import android.content.Intent;
 
-import android.support.test.InstrumentationRegistry;
-import android.support.test.rule.ActivityTestRule;
-import android.support.test.runner.AndroidJUnit4;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.rule.ActivityTestRule;
 
 import net.pmellaaho.rxapp.model.Contributor;
 import net.pmellaaho.rxapp.model.ContributorsModel;
@@ -26,13 +26,13 @@ import javax.inject.Singleton;
 import dagger.Component;
 import io.reactivex.Observable;
 
-import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
-import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.mockito.Matchers.anyString;
 
 @RunWith(AndroidJUnit4.class)
@@ -100,7 +100,8 @@ public class MainActivityTest {
 
         // GIVEN
         // create an Observable that emits nothing and then signals an error
-        Observable<List<Contributor>> errorEmittingObservable = Observable.error(new IllegalArgumentException());
+        Observable<List<Contributor>> errorEmittingObservable =
+                Observable.error(new IllegalArgumentException());
 
         Mockito.when(mModel.getContributors(anyString(), anyString()))
                 .thenReturn(errorEmittingObservable);

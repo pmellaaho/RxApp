@@ -1,10 +1,6 @@
 package net.pmellaaho.rxapp.ui;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -13,7 +9,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
-import com.squareup.leakcanary.RefWatcher;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import net.pmellaaho.rxapp.R;
 import net.pmellaaho.rxapp.RxApp;
@@ -92,11 +91,7 @@ public class ListFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         Timber.d("unsubscribe");
-
         mDisposables.dispose();
-
-        RefWatcher refWatcher = RxApp.getRefWatcher();
-        refWatcher.watch(this);
     }
 
     private void fetchData() {
