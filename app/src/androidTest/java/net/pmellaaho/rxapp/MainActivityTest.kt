@@ -24,7 +24,7 @@ import javax.inject.Singleton
 
 @RunWith(AndroidJUnit4::class)
 class MainActivityTest {
-    var model: ContributorsModel? = null
+    private var model: ContributorsModel? = null
 
     @Singleton
     @Component(modules = [MockNetworkModule::class])

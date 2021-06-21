@@ -35,7 +35,7 @@
             <EditText
                 android:id="@+id/repoEdit"
                 android:layout_column="1"
-                android:afterTextChanged="@{handler.afterTextChanged}"
+                android:afterTextChanged="@{handler::afterTextChanged}"
                 android:hint="type repo"
                 android:lines="1"
                 android:textAppearance="@android:style/TextAppearance.Medium"/>
@@ -47,7 +47,7 @@
                 android:layout_gravity="end"
                 android:layout_marginRight="16dp"
                 android:layout_marginTop="32dp"
-                android:onClick="@{handler.clicked}"
+                android:onClick="@{handler::clicked}"
                 android:text="Start"/>
 
         </GridLayout>
