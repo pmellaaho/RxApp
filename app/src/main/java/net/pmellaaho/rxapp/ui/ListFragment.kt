@@ -2,7 +2,6 @@ package net.pmellaaho.rxapp.ui
 
 import android.os.Bundle
 import android.view.*
-import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DefaultItemAnimator
@@ -15,6 +14,10 @@ import net.pmellaaho.rxapp.databinding.FragmentListBinding
 import net.pmellaaho.rxapp.model.Contributor
 import net.pmellaaho.rxapp.model.ContributorsModel
 import timber.log.Timber
+
+const val ARG_OWNER = "owner"
+const val ARG_REPO = "repo"
+
 
 class ListFragment : Fragment() {
     private val disposables = CompositeDisposable()
@@ -96,18 +99,5 @@ class ListFragment : Fragment() {
             return true
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    companion object {
-        const val ARG_OWNER = "owner"
-        const val ARG_REPO = "repo"
-
-        fun newInstance(owner: String?, repo: String?) =
-            ListFragment().apply {
-                arguments = bundleOf(
-                    ARG_OWNER to owner,
-                    ARG_REPO to repo
-                )
-            }
     }
 }

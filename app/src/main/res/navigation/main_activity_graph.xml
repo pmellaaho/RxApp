@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_activity_graph.xml"
+    app:startDestination="@id/repoInputFragment">
+
+    <fragment
+        android:id="@+id/repoInputFragment"
+        android:name="net.pmellaaho.rxapp.ui.RepoInputFragment"
+        android:label="Repo Input" />
+
+    <fragment
+        android:id="@+id/listFragment"
+        android:name="net.pmellaaho.rxapp.ui.ListFragment"
+        android:label="Contributors" />
+
+</navigation>
