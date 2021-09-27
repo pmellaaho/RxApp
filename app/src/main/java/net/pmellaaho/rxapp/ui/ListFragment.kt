@@ -4,34 +4,31 @@ import android.os.Bundle
 import android.view.*
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.DefaultItemAnimator
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.observers.DisposableObserver
+import androidx.recyclerview.widget.DividerItemDecoration
+import dagger.hilt.android.AndroidEntryPoint
 import net.pmellaaho.rxapp.R
-import net.pmellaaho.rxapp.RxApp
 import net.pmellaaho.rxapp.databinding.FragmentListBinding
-import net.pmellaaho.rxapp.model.Contributor
-import net.pmellaaho.rxapp.model.ContributorsModel
 import timber.log.Timber
 
 const val ARG_OWNER = "owner"
 const val ARG_REPO = "repo"
 
 
+@AndroidEntryPoint
 class ListFragment : Fragment() {
-    private val disposables = CompositeDisposable()
-    private var owner: String? = null
-    private var repo: String? = null
+    private lateinit var owner: String
+    private lateinit var repo: String
 
-    private lateinit var model: ContributorsModel
     private lateinit var binding: FragmentListBinding
+    private val viewModel: ContributorsViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (arguments != null) {
-            owner = requireArguments().getString(ARG_OWNER)
-            repo = requireArguments().getString(ARG_REPO)
+            owner = requireArguments().getString(ARG_OWNER)!!
+            repo = requireArguments().getString(ARG_REPO)!!
         }
     }
 
@@ -43,47 +40,32 @@ class ListFragment : Fragment() {
         binding.recyclerView.addItemDecoration(DividerItemDecoration(activity))
         binding.recyclerView.adapter = ContributorsAdapter()
         binding.recyclerView.itemAnimator = DefaultItemAnimator()
-        model = (requireActivity().application as RxApp).component().contributorsModel()
         setHasOptionsMenu(true)
         return binding.root
     }
 
-    override fun onResume() {
-        super.onResume()
-        fetchData()
-    }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-    override fun onDestroy() {
-        super.onDestroy()
-        Timber.d("unsubscribe")
-        disposables.dispose()
-    }
+        viewModel.state.observe(viewLifecycleOwner) { viewState ->
+            when (viewState) {
+                is ContributorsViewModel.Loading -> {
+                    binding.progress.visibility = View.VISIBLE
+                    binding.recyclerView.visibility = View.INVISIBLE
+                }
 
-    private fun fetchData() {
-        Timber.d("Fetch data from ListFragment")
-        binding.progress.visibility = View.VISIBLE
-        binding.recyclerView.visibility = View.INVISIBLE
-        disposables.add(
-            model.getContributors(owner, repo)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(ContributorsObserver())
-        )
-    }
+                is ContributorsViewModel.Error -> {
+                    Timber.e("request failed")
+                    binding.progress.visibility = View.INVISIBLE
+                }
 
-    private inner class ContributorsObserver : DisposableObserver<List<Contributor?>?>() {
-        override fun onNext(contributors: List<Contributor?>?) {
-            Timber.d("received data from model")
-            (binding.recyclerView.adapter as ContributorsAdapter).setData(contributors)
-        }
-
-        override fun onComplete() {
-            Timber.d("request completed")
-            binding.progress.visibility = View.INVISIBLE
-            binding.recyclerView.visibility = View.VISIBLE
-        }
-
-        override fun onError(e: Throwable) {
-            Timber.e(e, "request failed")
+                is ContributorsViewModel.Data -> {
+                    Timber.d("received data")
+                    binding.progress.visibility = View.INVISIBLE
+                    binding.recyclerView.visibility = View.VISIBLE
+                    (binding.recyclerView.adapter as ContributorsAdapter).setData(viewState.contributors)
+                }
+            }
         }
     }
 
@@ -94,8 +76,8 @@ class ListFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.action_refresh) {
-            model.reset()
-            fetchData()
+            Timber.d("Fetch data from ListFragment")
+            viewModel.fetchContributors(owner, repo)
             return true
         }
         return super.onOptionsItemSelected(item)

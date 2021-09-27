@@ -2,30 +2,44 @@ package net.pmellaaho.rxapp
 
 import android.content.Intent
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ActivityTestRule
 import com.schibsted.spain.barista.assertion.BaristaListAssertions.assertDisplayedAtPosition
-import com.schibsted.spain.barista.assertion.BaristaVisibilityAssertions.assertDisplayed
 import com.schibsted.spain.barista.interaction.BaristaClickInteractions.clickOn
-import dagger.Component
-import io.reactivex.Observable
-import net.pmellaaho.rxapp.model.Contributor
-import net.pmellaaho.rxapp.model.ContributorsModel
-import net.pmellaaho.rxapp.network.NetworkComponent
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
+import dagger.hilt.android.testing.UninstallModules
+import net.pmellaaho.rxapp.network.NetworkModule
 import net.pmellaaho.rxapp.ui.MainActivity
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.RuleChain
 import org.junit.runner.RunWith
-import org.mockito.Matchers
-import org.mockito.Mockito
 import java.util.*
-import javax.inject.Singleton
 
+
+//@UninstallModules(NetworkModule::class)
+@HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
 class MainActivityTest {
-    private var model: ContributorsModel? = null
 
+//    @BindValue
+//    @JvmField
+//    @Named("baseUrl")
+//    val baseUrl: String = RESTMockServer.getUrl()
+
+//    val repository: ContributorsRepository = Mockito.mock(ContributorsRepository::class.java)
+
+    private val hiltRule = HiltAndroidRule(this)
+    private val activityTestRule = ActivityTestRule(MainActivity::class.java)
+
+    @get:Rule
+    val rule = RuleChain
+        .outerRule(hiltRule)
+        .around(activityTestRule)
+
+
+    /*
     @Singleton
     @Component(modules = [MockNetworkModule::class])
     interface MockNetworkComponent : NetworkComponent
@@ -37,34 +51,50 @@ class MainActivityTest {
         true,  // initialTouchMode
         false
     ) // launchActivity.
+     */
 
     @Before
     fun setUp() {
+
+        //be sure to reset it before each test!
+        RESTMockServer.reset()
+
+        hiltRule.inject()
+
+        /*
         val instrumentation = InstrumentationRegistry.getInstrumentation()
         val app = instrumentation.targetContext
             .applicationContext as RxApp
+
         val testComponent = DaggerMainActivityTest_MockNetworkComponent.builder()
             .mockNetworkModule(MockNetworkModule())
             .build()
         app.setComponent(testComponent)
         model = testComponent.contributorsModel()
+         */
     }
 
     @Test
     fun listWithTwoContributors() {
 
+        RESTMockServer.whenGET(pathContains("square/retrofit/contributors"))
+            .thenReturnFile("contributors.json");
+
         // GIVEN
-        val tmpList: MutableList<Contributor> = ArrayList()
-        tmpList.add(Contributor("Jesse", 600))
-        tmpList.add(Contributor("Jake", 200))
-        val testObservable = Observable.just<List<Contributor>>(tmpList)
-        Mockito.`when`(
-            model!!.getContributors(Matchers.anyString(), Matchers.anyString())
-        )
-            .thenReturn(testObservable)
+//        val tmpList: MutableList<Contributor> = ArrayList()
+//        tmpList.add(Contributor("Jesse", 600))
+//        tmpList.add(Contributor("Jake", 200))
+
+//        val testObservable = Observable.just<List<Contributor>>(tmpList)
+
+//        runBlocking {
+//            Mockito.`when`(
+//                repository.getContributors(Matchers.anyString(), Matchers.anyString())
+//            ).thenReturn(tmpList)
+//        }
 
         // WHEN
-        mActivityRule.launchActivity(Intent())
+        activityTestRule.launchActivity(Intent())
         clickOn(R.id.startBtn)
 
         // THEN
@@ -75,6 +105,7 @@ class MainActivityTest {
         assertDisplayedAtPosition(R.id.recyclerView, 1, "200")
     }
 
+    /*
     @Test
     fun errorFromNetwork() {
 
@@ -83,15 +114,16 @@ class MainActivityTest {
         val errorEmittingObservable =
             Observable.error<List<Contributor>>(IllegalArgumentException())
         Mockito.`when`(
-            model!!.getContributors(Matchers.anyString(), Matchers.anyString())
+            model.getContributors(Matchers.anyString(), Matchers.anyString())
         )
             .thenReturn(errorEmittingObservable)
 
         // WHEN
-        mActivityRule.launchActivity(Intent())
+        activityTestRule.launchActivity(Intent())
         clickOn(R.id.startBtn)
 
         // THEN
         assertDisplayed(R.id.errorText)
     }
+     */
 }

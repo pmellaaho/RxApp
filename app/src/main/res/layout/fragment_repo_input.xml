@@ -46,7 +46,7 @@
                 android:layout_gravity="end"
                 android:layout_marginTop="32dp"
                 android:layout_marginRight="16dp"
-                android:onClick="@{handler::clicked}"
+                android:onClick="@{v -> handler.clicked()}"
                 android:text="Start" />
 
         </GridLayout>

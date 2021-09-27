@@ -1,8 +1,14 @@
 package net.pmellaaho.rxapp.network;
 
 
+import net.pmellaaho.rxapp.model.ContributorsRepository;
+
+import javax.inject.Singleton;
+
 import dagger.Module;
 import dagger.Provides;
+import dagger.hilt.InstallIn;
+import dagger.hilt.components.SingletonComponent;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -10,12 +16,21 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 @Module
+@InstallIn(SingletonComponent.class) // Installs NetworkModule in the generated SingletonComponent.
 public class NetworkModule {
 
+    private static final String GITHUB_ENDPOINT = "https://api.github.com/";
+
+//    @Singleton
+//    @Provides
+//    @Named("baseUrl")
+//    String provideBaseUrl() {
+//      return GITHUB_ENDPOINT;
+//    }
+
+    @Singleton
     @Provides
     GitHubApi provideGitHubApi() {
-        final String GITHUB_ENDPOINT = "https://api.github.com/";
-
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
 
         /* Use OAuth token to get more than 60 requests/hour
@@ -44,5 +59,12 @@ public class NetworkModule {
                 .build();
 
         return retrofit.create(GitHubApi.class);
+    }
+
+
+    @Singleton
+    @Provides
+    ContributorsRepository provideContributorsRepository(GitHubApi gitHubApi) {
+        return new ContributorsRepository(gitHubApi);
     }
 }

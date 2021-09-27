@@ -17,7 +17,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:minHeight="?attr/listPreferredItemHeight"
-        android:onClick="@{listener.onItemClick}"
+        android:onClick="@{v -> listener.onItemClick(v)}"
         android:orientation="vertical"
         android:paddingBottom="1dp"
         android:paddingLeft="8dp"

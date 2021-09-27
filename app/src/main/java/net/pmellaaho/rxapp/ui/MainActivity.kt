@@ -3,15 +3,16 @@ package net.pmellaaho.rxapp.ui
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.core.os.bundleOf
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
+import dagger.hilt.android.AndroidEntryPoint
 import net.pmellaaho.rxapp.R
-import net.pmellaaho.rxapp.ui.RepoInputFragment.OnRepoInputListener
 
-class MainActivity : AppCompatActivity(), OnRepoInputListener {
+@AndroidEntryPoint
+class MainActivity : AppCompatActivity() {
+
     private lateinit var navController: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,14 +27,5 @@ class MainActivity : AppCompatActivity(), OnRepoInputListener {
         val appBarConfiguration = AppBarConfiguration(navController.graph)
         findViewById<Toolbar>(R.id.toolbar)
             .setupWithNavController(navController, appBarConfiguration)
-    }
-
-    override fun onDataReady(repo: String) {
-        navController.navigate(
-            R.id.listFragment, bundleOf(
-                ARG_OWNER to RepoInputFragment.OWNER,
-                ARG_REPO to repo
-            )
-        )
     }
 }
