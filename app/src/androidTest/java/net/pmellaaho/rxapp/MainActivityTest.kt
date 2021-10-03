@@ -1,6 +1,7 @@
 package net.pmellaaho.rxapp
 
 import androidx.test.espresso.IdlingRegistry
+import androidx.test.espresso.IdlingResource
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.jakewharton.espresso.OkHttp3IdlingResource
@@ -13,6 +14,7 @@ import io.appflate.restmock.RESTMockServer
 import io.appflate.restmock.utils.RequestMatchers.pathContains
 import net.pmellaaho.rxapp.ui.MainActivity
 import okhttp3.OkHttpClient
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -33,12 +35,20 @@ class MainActivityTest {
     @get:Rule
     var hiltRule = HiltAndroidRule(this)
 
+    lateinit var resource: IdlingResource
+
     @Before
     fun setUp() {
         //be sure to reset it before each test!
         RESTMockServer.reset()
         hiltRule.inject()
-        IdlingRegistry.getInstance().register(OkHttp3IdlingResource.create("okhttp", client))
+        resource = OkHttp3IdlingResource.create("okhttp", client)
+        IdlingRegistry.getInstance().register(resource)
+    }
+
+    @After
+    fun tearDown() {
+        IdlingRegistry.getInstance().unregister(resource)
     }
 
     @Test
