@@ -19,21 +19,14 @@ import retrofit2.converter.gson.GsonConverterFactory;
 @InstallIn(SingletonComponent.class) // Installs NetworkModule in the generated SingletonComponent.
 public class NetworkModule {
 
-    private static final String GITHUB_ENDPOINT = "https://api.github.com/";
-
-//    @Singleton
-//    @Provides
-//    @Named("baseUrl")
-//    String provideBaseUrl() {
-//      return GITHUB_ENDPOINT;
-//    }
-
-    @Singleton
     @Provides
-    GitHubApi provideGitHubApi() {
+    @Singleton
+    OkHttpClient provideOkHttpClient() {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
+        builder.addNetworkInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY));
+        return builder.build();
 
-        /* Use OAuth token to get more than 60 requests/hour
+         /* Use OAuth token to get more than 60 requests/hour
         final String githubToken = RxApp.get().getResources().getString(R.string
                 .github_oauth_token);
 
@@ -48,16 +41,22 @@ public class NetworkModule {
             });
         }
          */
+    }
 
-        builder.addNetworkInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY));
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(GITHUB_ENDPOINT)
-                .client(builder.build())
+    @Provides
+    @Singleton
+    Retrofit provideRetrofit(OkHttpClient client, String endPoint) {
+        return new Retrofit.Builder()
+                .baseUrl(endPoint)
+                .client(client)
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build();
+    }
 
+    @Singleton
+    @Provides
+    GitHubApi provideGitHubApi(Retrofit retrofit) {
         return retrofit.create(GitHubApi.class);
     }
 

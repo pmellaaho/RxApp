@@ -2,12 +2,13 @@
 
 buildscript {
     ext {
-        kotlin_version = '1.5.30'
-        hilt_version = '2.33-beta'
+        kotlin_version = '1.5.21'
+        hilt_version = '2.38'
     }
     repositories {
-        jcenter()
         google()
+        maven { url 'https://jitpack.io' }
+        jcenter()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:4.2.2'
@@ -21,8 +22,8 @@ buildscript {
 
 allprojects {
     repositories {
-        jcenter()
         google()
-        maven { url "https://jitpack.io" }
+        maven { url 'https://jitpack.io' }
+        jcenter()
     }
 }
