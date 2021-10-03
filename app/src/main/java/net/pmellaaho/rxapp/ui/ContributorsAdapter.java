@@ -39,7 +39,7 @@ public class ContributorsAdapter extends RecyclerView.Adapter<ContributorsAdapte
 
         public void onItemClick(View view) {
             if (mListener != null) {
-                mListener.onItemClick(getAdapterPosition());
+                mListener.onItemClick(getBindingAdapterPosition());
             }
         }
     }

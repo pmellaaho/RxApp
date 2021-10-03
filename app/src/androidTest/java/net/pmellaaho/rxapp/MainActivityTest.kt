@@ -1,9 +1,8 @@
 package net.pmellaaho.rxapp
 
-import android.content.Intent
 import androidx.test.espresso.IdlingRegistry
+import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.rule.ActivityTestRule
 import com.jakewharton.espresso.OkHttp3IdlingResource
 import com.schibsted.spain.barista.assertion.BaristaListAssertions.assertDisplayedAtPosition
 import com.schibsted.spain.barista.assertion.BaristaVisibilityAssertions.assertDisplayed
@@ -17,7 +16,6 @@ import okhttp3.OkHttpClient
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.rules.RuleChain
 import org.junit.runner.RunWith
 import javax.inject.Inject
 
@@ -29,13 +27,11 @@ class MainActivityTest {
     @Inject
     lateinit var client: OkHttpClient
 
-    private val hiltRule = HiltAndroidRule(this)
-    private val activityTestRule = ActivityTestRule(MainActivity::class.java)
+    @get:Rule
+    var activityScenarioRule = ActivityScenarioRule(MainActivity::class.java)
 
     @get:Rule
-    val rule = RuleChain
-        .outerRule(hiltRule)
-        .around(activityTestRule)
+    var hiltRule = HiltAndroidRule(this)
 
     @Before
     fun setUp() {
@@ -51,8 +47,7 @@ class MainActivityTest {
         RESTMockServer.whenGET(pathContains("square/retrofit/contributors"))
             .thenReturnFile("contributors.json")
 
-        // WHEN
-        activityTestRule.launchActivity(Intent())
+        // WHEN - activityScenarioRule automatically launches Activity before each test
         clickOn(R.id.startBtn)
 
         // THEN
@@ -70,7 +65,6 @@ class MainActivityTest {
             .thenReturnEmpty(503)
 
         // WHEN
-        activityTestRule.launchActivity(Intent())
         clickOn(R.id.startBtn)
 
         // THEN
