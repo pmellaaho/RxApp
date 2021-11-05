@@ -1,11 +1,13 @@
 package net.pmellaaho.rxapp
 
+import androidx.compose.ui.test.*
+import androidx.compose.ui.test.junit4.AndroidComposeTestRule
+import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.IdlingResource
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.jakewharton.espresso.OkHttp3IdlingResource
-import com.schibsted.spain.barista.assertion.BaristaListAssertions.assertDisplayedAtPosition
 import com.schibsted.spain.barista.assertion.BaristaVisibilityAssertions.assertDisplayed
 import com.schibsted.spain.barista.interaction.BaristaClickInteractions.clickOn
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -30,7 +32,7 @@ class MainActivityTest {
     lateinit var client: OkHttpClient
 
     @get:Rule
-    var activityScenarioRule = ActivityScenarioRule(MainActivity::class.java)
+    var composeTestRule = createAndroidComposeRule(MainActivity::class.java)
 
     @get:Rule
     var hiltRule = HiltAndroidRule(this)
@@ -61,11 +63,16 @@ class MainActivityTest {
         clickOn(R.id.startBtn)
 
         // THEN
-        assertDisplayedAtPosition(R.id.recyclerView, 0, "JakeWharton")
-        assertDisplayedAtPosition(R.id.recyclerView, 0, "1098")
+        composeTestRule.onList().assertExists()
+        composeTestRule.onList().onChildren().assertCountEquals(2)
 
-        assertDisplayedAtPosition(R.id.recyclerView, 1, "swankjesse")
-        assertDisplayedAtPosition(R.id.recyclerView, 1, "281")
+        composeTestRule.onList().onChildren().assertAny(hasText("JakeWharton"))
+        composeTestRule.onList().onChildren().assertAny(hasText("1098"))
+
+        composeTestRule.onList().onChildren().assertAny(hasText("swankjesse"))
+        composeTestRule.onList().onChildren().assertAny(hasText("281"))
+
+        composeTestRule.onRoot(useUnmergedTree = true).printToLog("currentLabelExists")
     }
 
     @Test
@@ -81,3 +88,6 @@ class MainActivityTest {
         assertDisplayed(R.id.errorText)
     }
 }
+
+typealias MainActivityTestRule = AndroidComposeTestRule<ActivityScenarioRule<MainActivity>, MainActivity>
+internal fun MainActivityTestRule.onList() = onNode(hasAnyChild(hasClickAction()))

@@ -2,14 +2,18 @@ package net.pmellaaho.rxapp.ui
 
 import android.os.Bundle
 import android.view.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.recyclerview.widget.DefaultItemAnimator
-import androidx.recyclerview.widget.DividerItemDecoration
 import dagger.hilt.android.AndroidEntryPoint
 import net.pmellaaho.rxapp.R
 import net.pmellaaho.rxapp.databinding.FragmentListBinding
+import net.pmellaaho.rxapp.ui.ContributorsViewModel.ViewState
+import net.pmellaaho.rxapp.ui.ContributorsViewModel.ViewState.*
 import timber.log.Timber
 
 const val ARG_OWNER = "owner"
@@ -37,9 +41,19 @@ class ListFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_list, container, false)
-        binding.recyclerView.addItemDecoration(DividerItemDecoration(activity))
-        binding.recyclerView.adapter = ContributorsAdapter()
-        binding.recyclerView.itemAnimator = DefaultItemAnimator()
+
+        binding.composeView.apply {
+            // Dispose the Composition when the view's LifecycleOwner is destroyed
+            setViewCompositionStrategy(
+                ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+            )
+
+            setContent {
+                // entering the Compose world!
+                ListFragmentScreen(viewModel)
+            }
+        }
+
         setHasOptionsMenu(true)
         return binding.root
     }
@@ -49,21 +63,20 @@ class ListFragment : Fragment() {
 
         viewModel.state.observe(viewLifecycleOwner) { viewState ->
             when (viewState) {
-                is ContributorsViewModel.Loading -> {
+                is Loading -> {
                     binding.progress.visibility = View.VISIBLE
-                    binding.recyclerView.visibility = View.INVISIBLE
+                    binding.composeView.visibility = View.INVISIBLE
                 }
 
-                is ContributorsViewModel.Error -> {
+                is Error -> {
                     Timber.e("request failed")
                     binding.progress.visibility = View.INVISIBLE
                 }
 
-                is ContributorsViewModel.Data -> {
+                is Data -> {
                     Timber.d("received data")
                     binding.progress.visibility = View.INVISIBLE
-                    binding.recyclerView.visibility = View.VISIBLE
-                    (binding.recyclerView.adapter as ContributorsAdapter).setData(viewState.contributors)
+                    binding.composeView.visibility = View.VISIBLE
                 }
             }
         }
@@ -81,5 +94,16 @@ class ListFragment : Fragment() {
             return true
         }
         return super.onOptionsItemSelected(item)
+    }
+}
+
+@Composable
+private fun ListFragmentScreen(viewModel: ContributorsViewModel) {
+    val state: ViewState by viewModel.state.observeAsState(initial = Loading)
+
+    if (state is Data) {
+        ContributorsList(
+            contributors = (state as Data).contributors
+        )
     }
 }

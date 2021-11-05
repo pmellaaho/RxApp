@@ -8,6 +8,7 @@ import kotlinx.coroutines.launch
 import net.pmellaaho.rxapp.asLiveData
 import net.pmellaaho.rxapp.model.Contributor
 import net.pmellaaho.rxapp.model.ContributorsRepository
+import net.pmellaaho.rxapp.ui.ContributorsViewModel.ViewState.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -36,9 +37,9 @@ class ContributorsViewModel @Inject constructor(
         }
     }
 
-
-    sealed class ViewState
-    object Loading : ViewState()
-    object Error : ViewState()
-    data class Data(val contributors: List<Contributor>) : ViewState()
+    sealed class ViewState {
+        object Loading : ViewState()
+        object Error : ViewState()
+        data class Data(val contributors: List<Contributor>) : ViewState()
+    }
 }

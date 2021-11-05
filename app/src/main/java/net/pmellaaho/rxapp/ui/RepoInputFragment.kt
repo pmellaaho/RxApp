@@ -13,6 +13,7 @@ import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
 import net.pmellaaho.rxapp.R
 import net.pmellaaho.rxapp.databinding.FragmentRepoInputBinding
+import net.pmellaaho.rxapp.ui.ContributorsViewModel.ViewState.*
 import timber.log.Timber
 
 @AndroidEntryPoint
@@ -50,18 +51,18 @@ class RepoInputFragment : Fragment() {
 
         viewModel.state.observe(viewLifecycleOwner) { viewState ->
             when (viewState) {
-                is ContributorsViewModel.Loading -> {
+                is Loading -> {
                     binding.progress.visibility = View.VISIBLE
                     binding.errorText.visibility = View.INVISIBLE
                 }
 
-                is ContributorsViewModel.Error -> {
+                is Error -> {
                     binding.progress.visibility = View.INVISIBLE
                     binding.errorText.visibility = View.VISIBLE
                     binding.startBtn.isEnabled = true
                 }
 
-                is ContributorsViewModel.Data -> {
+                is Data -> {
                     Timber.d("request completed")
                     binding.progress.visibility = View.INVISIBLE
                 }
