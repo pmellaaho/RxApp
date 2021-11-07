@@ -1,4 +1,6 @@
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -7,49 +9,56 @@
             type="net.pmellaaho.rxapp.ui.RepoInputFragment.MyHandler" />
     </data>
 
-    <FrameLayout xmlns:tools="http://schemas.android.com/tools"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context="net.pmellaaho.rxapp.ui.RepoInputFragment">
+        android:layout_height="wrap_content">
 
-        <GridLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:columnCount="2"
-            android:useDefaultMargins="true">
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            tools:context="net.pmellaaho.rxapp.ui.RepoInputFragment">
+
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/toolbar"
+                style="@style/Widget.MaterialComponents.Toolbar.Primary"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize" />
 
             <TextView
-                android:layout_column="0"
-                android:layout_columnSpan="2"
+                android:id="@+id/title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
                 android:text="Show the contributors to open source projects by Square"
                 android:textAppearance="@android:style/TextAppearance.Material.Large" />
 
-            <TextView
-                android:layout_column="0"
-                android:text="Repo:"
-                android:textAppearance="@android:style/TextAppearance.Material.Medium" />
-
-            <EditText
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/repoEdit"
-                android:layout_column="1"
-                android:afterTextChanged="@{handler::afterTextChanged}"
-                android:hint="type repo"
-                android:lines="1"
-                android:textAppearance="@android:style/TextAppearance.Material.Medium" />
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_margin="32dp"
+                android:hint="Repository"
+                app:endIconMode="clear_text"
+                app:startIconDrawable="@drawable/outline_search_24">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            </com.google.android.material.textfield.TextInputLayout>
 
             <Button
                 android:id="@+id/startBtn"
                 style="Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_column="0"
-                android:layout_columnSpan="2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_gravity="end"
-                android:layout_marginTop="32dp"
-                android:layout_marginRight="16dp"
+                android:layout_margin="32dp"
                 android:onClick="@{v -> handler.clicked()}"
                 android:text="Start" />
-
-        </GridLayout>
+        </LinearLayout>
 
         <com.google.android.material.progressindicator.CircularProgressIndicator
             android:id="@+id/progress"
@@ -57,7 +66,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:indeterminate="true"
-            android:visibility="invisible" />
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/errorText"
@@ -66,7 +75,6 @@
             android:layout_gravity="center"
             android:text="Error fetching data"
             android:textAppearance="?attr/textAppearanceLargePopupMenu"
-            android:visibility="invisible" />
-
+            android:visibility="gone" />
     </FrameLayout>
 </layout>

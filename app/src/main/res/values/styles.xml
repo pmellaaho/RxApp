@@ -7,10 +7,9 @@
         <!-- Material color attributes -->
         <item name="colorPrimary">@color/primaryColor</item>
         <item name="colorPrimaryDark">@color/primaryDarkColor</item>
-        <item name="colorSurface">@color/primaryLightColor</item>
         <item name="android:textColorPrimary">@color/primaryTextColor</item>
+        <item name="colorSurface">@color/primaryLightColor</item>
 
-
+        <item name="textInputStyle">@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox</item>
     </style>
-
 </resources>

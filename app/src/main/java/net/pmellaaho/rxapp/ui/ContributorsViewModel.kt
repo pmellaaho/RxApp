@@ -23,8 +23,13 @@ class ContributorsViewModel @Inject constructor(
     private val _navigateToList = MutableLiveData<Event<Boolean>>()
     val navigateToList = _navigateToList.asLiveData()
 
+    private lateinit var owner: String
+    private lateinit var repo: String
+
     fun fetchContributors(owner: String, repo: String) {
         _state.value = Loading
+        this.owner = owner
+        this.repo = repo
         viewModelScope.launch {
             try {
                 val contributors: List<Contributor> = repository.getContributors(owner, repo)
@@ -35,6 +40,10 @@ class ContributorsViewModel @Inject constructor(
                 _state.value = Error
             }
         }
+    }
+
+    fun refreshData() {
+        fetchContributors(owner, repo)
     }
 
     sealed class ViewState {

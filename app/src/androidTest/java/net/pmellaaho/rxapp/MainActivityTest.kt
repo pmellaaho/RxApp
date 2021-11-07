@@ -63,6 +63,8 @@ class MainActivityTest {
         clickOn(R.id.startBtn)
 
         // THEN
+        composeTestRule.onRoot(useUnmergedTree = true).printToLog("currentLabelExists")
+
         composeTestRule.onList().assertExists()
         composeTestRule.onList().onChildren().assertCountEquals(2)
 
@@ -71,8 +73,6 @@ class MainActivityTest {
 
         composeTestRule.onList().onChildren().assertAny(hasText("swankjesse"))
         composeTestRule.onList().onChildren().assertAny(hasText("281"))
-
-        composeTestRule.onRoot(useUnmergedTree = true).printToLog("currentLabelExists")
     }
 
     @Test
@@ -90,4 +90,4 @@ class MainActivityTest {
 }
 
 typealias MainActivityTestRule = AndroidComposeTestRule<ActivityScenarioRule<MainActivity>, MainActivity>
-internal fun MainActivityTestRule.onList() = onNode(hasAnyChild(hasClickAction()))
+internal fun MainActivityTestRule.onList() = onNode(hasContentDescription("ContributorsList"))

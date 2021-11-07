@@ -5,16 +5,20 @@ import android.text.Editable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.setupWithNavController
 import dagger.hilt.android.AndroidEntryPoint
 import net.pmellaaho.rxapp.R
 import net.pmellaaho.rxapp.databinding.FragmentRepoInputBinding
 import net.pmellaaho.rxapp.ui.ContributorsViewModel.ViewState.*
 import timber.log.Timber
+
+const val OWNER = "square"
+private const val REPO = "retrofit"
 
 @AndroidEntryPoint
 class RepoInputFragment : Fragment() {
@@ -41,13 +45,16 @@ class RepoInputFragment : Fragment() {
         binding.handler = MyHandler()
 
         if (savedInstanceState == null) {
-            binding.repoEdit.setText(REPO)
+            binding.repoEdit.editText?.setText(REPO)
         }
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val navController = findNavController()
+        val appBarConfiguration = AppBarConfiguration(navController.graph)
+        binding.toolbar.setupWithNavController(navController, appBarConfiguration)
 
         viewModel.state.observe(viewLifecycleOwner) { viewState ->
             when (viewState) {
@@ -71,23 +78,14 @@ class RepoInputFragment : Fragment() {
 
         viewModel.navigateToList.observe(viewLifecycleOwner) { event ->
             if (event.getContentIfNotHandled() == true) {
-                findNavController().navigate(
-                    R.id.listFragment, bundleOf(
-                        ARG_OWNER to OWNER,
-                        ARG_REPO to binding.repoEdit.text.toString()
-                    )
-                )
+                findNavController().navigate(R.id.listFragment)
             }
         }
     }
 
     private fun fetchData() {
         Timber.d("Fetch data from RepoInputFragment")
-        viewModel.fetchContributors(OWNER, binding.repoEdit.text.toString())
+        viewModel.fetchContributors(OWNER, binding.repoEdit.editText?.text.toString())
     }
 
-    companion object {
-        const val OWNER = "square"
-        private const val REPO = "retrofit"
-    }
 }
