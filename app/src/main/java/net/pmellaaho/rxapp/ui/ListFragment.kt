@@ -88,12 +88,13 @@ private fun ListFragmentScreen(viewModel: ContributorsViewModel, backAction: () 
 @Composable
 private fun ListFragmentContent(state: ViewState) {
     when (state) {
-        is Data -> {
+        is ShowList -> {
             ContributorsList(
                 contributors = state.contributors
             )
         }
         is Loading -> ProgressIndicator()
+        is EnterRepo -> {}
 
         is Error -> {
             Timber.e("request failed")

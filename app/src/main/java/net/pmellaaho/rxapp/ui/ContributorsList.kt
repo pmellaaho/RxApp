@@ -16,12 +16,10 @@ import net.pmellaaho.rxapp.model.Contributor
 
 @Composable
 fun ContributorsList(contributors: List<Contributor>) {
-    MdcTheme {
-        LazyColumn(modifier = Modifier.semantics { contentDescription = "ContributorsList" }) {
-            items(contributors) { contributor ->
-                ContributorItem(contributor = contributor)
-                Divider(startIndent = 16.dp)
-            }
+    LazyColumn(modifier = Modifier.semantics { contentDescription = "ContributorsList" }) {
+        items(contributors) { contributor ->
+            ContributorItem(contributor = contributor)
+            Divider(startIndent = 16.dp)
         }
     }
 }

@@ -33,7 +33,7 @@ class ContributorsViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val contributors: List<Contributor> = repository.getContributors(owner, repo)
-                _state.value = Data(contributors)
+                _state.value = ShowList(contributors)
                 _navigateToList.value = Event(true)
 
             } catch (exception: Exception) {
@@ -49,6 +49,7 @@ class ContributorsViewModel @Inject constructor(
     sealed class ViewState {
         object Loading : ViewState()
         object Error : ViewState()
-        data class Data(val contributors: List<Contributor>) : ViewState()
+        object EnterRepo : ViewState()
+        data class ShowList(val contributors: List<Contributor>) : ViewState()
     }
 }
