@@ -8,8 +8,6 @@ import androidx.test.espresso.IdlingResource
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.jakewharton.espresso.OkHttp3IdlingResource
-import com.schibsted.spain.barista.assertion.BaristaVisibilityAssertions.assertDisplayed
-import com.schibsted.spain.barista.interaction.BaristaClickInteractions.clickOn
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.appflate.restmock.RESTMockServer
@@ -58,13 +56,13 @@ class MainActivityTest {
         // GIVEN
         RESTMockServer.whenGET(pathContains("square/retrofit/contributors"))
             .thenReturnFile("contributors.json")
-
-        // WHEN - activityScenarioRule automatically launches Activity before each test
-        clickOn(R.id.startBtn)
-
-        // THEN
         composeTestRule.onRoot(useUnmergedTree = true).printToLog("currentLabelExists")
 
+        // WHEN - activityScenarioRule automatically launches Activity before each test
+        composeTestRule.onNode(hasSetTextAction()).performTextInput("Retrofit")
+        composeTestRule.onNodeWithText("Start").performClick()
+
+        // THEN
         composeTestRule.onList().assertExists()
         composeTestRule.onList().onChildren().assertCountEquals(2)
 
@@ -82,10 +80,11 @@ class MainActivityTest {
             .thenReturnEmpty(503)
 
         // WHEN
-        clickOn(R.id.startBtn)
+        composeTestRule.onNode(hasSetTextAction()).performTextInput("Retrofit")
+        composeTestRule.onNodeWithText("Start").performClick()
 
         // THEN
-        assertDisplayed(R.id.errorText)
+        composeTestRule.onNodeWithText("Error loading data").assertIsDisplayed()
     }
 }
 
