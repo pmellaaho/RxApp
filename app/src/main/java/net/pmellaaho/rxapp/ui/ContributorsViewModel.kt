@@ -20,21 +20,19 @@ class ContributorsViewModel @Inject constructor(
     private val _state = MutableLiveData<ViewState>()
     val state = _state.asLiveData()
 
-    private val _navigateToList = MutableLiveData<Event<Boolean>>()
-    val navigateToList = _navigateToList.asLiveData()
+    private val _navigateEvent = MutableLiveData<Event<String>>()
+    val navigateEvent = _navigateEvent.asLiveData()
 
-    private lateinit var owner: String
     private lateinit var repo: String
 
-    fun fetchContributors(owner: String, repo: String) {
+    fun fetchContributors(repo: String) {
         _state.value = Loading
-        this.owner = owner
         this.repo = repo
         viewModelScope.launch {
             try {
-                val contributors: List<Contributor> = repository.getContributors(owner, repo)
+                val contributors: List<Contributor> = repository.getContributors(repo)
                 _state.value = ShowList(contributors)
-                _navigateToList.value = Event(true)
+                _navigateEvent.value = Event(RxAppScreen.ContributorsList.name)
 
             } catch (exception: Exception) {
                 _state.value = Error
@@ -43,7 +41,14 @@ class ContributorsViewModel @Inject constructor(
     }
 
     fun refreshData() {
-        fetchContributors(owner, repo)
+        fetchContributors(repo)
+    }
+
+    fun onBackPressed() {
+        if (_state.value is ShowList) {
+            _state.value = EnterRepo
+            _navigateEvent.value = Event(RxAppScreen.RepoInput.name)
+        }
     }
 
     sealed class ViewState {

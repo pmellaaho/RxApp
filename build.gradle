@@ -8,7 +8,7 @@ buildscript {
         targetSdkVersion = 31
 
         // App dependencies
-        gradleVersion = '7.0.2'
+        gradleVersion = '7.0.4'
         kotlinVersion = '1.5.31'
         androidxLifecycleVersion = '2.4.0'
         coroutinesVersion = '1.5.2'

@@ -5,8 +5,8 @@ import javax.inject.Inject
 
 class ContributorsRepository @Inject constructor(private val api: GitHubApi) {
 
-    suspend fun getContributors(owner: String, repo: String): List<Contributor> {
-        return api.getContributors(owner, repo)
+    suspend fun getContributors(repo: String): List<Contributor> {
+        return api.getContributors(repo)
     }
 
 }

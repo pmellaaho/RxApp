@@ -35,20 +35,22 @@ class MainActivity : ComponentActivity() {
 fun RxApp(viewModel: ContributorsViewModel) {
     MdcTheme {
         val navController = rememberNavController()
-        val navigateToList by viewModel.navigateToList.observeAsState()
+        val navigateEvent by viewModel.navigateEvent.observeAsState()
         val backstackEntry = navController.currentBackStackEntryAsState()
         val currentScreen = RxAppScreen.fromRoute(
             backstackEntry.value?.destination?.route
         )
 
-        if (navigateToList?.getContentIfNotHandled() == true) {
-            navController.navigate(RxAppScreen.ContributorsList.name)
+        // todo: how to listen system Back?
+        navigateEvent?.getContentIfNotHandled()?.let {
+            if (it == RxAppScreen.ContributorsList.name) navController.navigate(it)
+            else navController.popBackStack()
         }
 
         Scaffold(
             topBar = {
                 RxAppBar(currentScreen = currentScreen,
-                    backAction = { navController.popBackStack() },
+                    backAction = { viewModel.onBackPressed() },
                     onRefreshAction = { viewModel.refreshData() })
             },
             content = { innerPadding ->

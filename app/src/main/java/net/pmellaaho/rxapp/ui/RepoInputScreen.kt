@@ -21,14 +21,13 @@ import androidx.compose.ui.unit.dp
 import net.pmellaaho.rxapp.ui.ContributorsViewModel.ViewState.*
 import timber.log.Timber
 
-const val OWNER = "square"
 
 @Composable
 fun RepoInputScreen(viewModel: ContributorsViewModel) {
     val state: ContributorsViewModel.ViewState by viewModel.state.observeAsState(initial = EnterRepo)
     var text by rememberSaveable { mutableStateOf("") }
     val onTextChanged: (String) -> Unit = { text = it }
-    val onClickListener: (String) -> Unit = { viewModel.fetchContributors(OWNER, it) }
+    val onClickListener: (String) -> Unit = { viewModel.fetchContributors(it) }
 
     when (state) {
         is Loading -> ProgressIndicator()

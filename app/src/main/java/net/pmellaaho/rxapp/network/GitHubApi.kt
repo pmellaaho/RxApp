@@ -5,6 +5,8 @@ import retrofit2.http.GET
 import retrofit2.http.Headers
 import retrofit2.http.Path
 
+private const val OWNER = "square"
+
 interface GitHubApi {
 
     /**
@@ -13,7 +15,7 @@ interface GitHubApi {
     @Headers("Content-Type: application/json")
     @GET("/repos/{owner}/{repo}/contributors")
     suspend fun getContributors(
-        @Path("owner") owner: String,
-        @Path("repo") repo: String
+        @Path("repo") repo: String,
+        @Path("owner") owner: String = OWNER
     ): List<Contributor>
 }
