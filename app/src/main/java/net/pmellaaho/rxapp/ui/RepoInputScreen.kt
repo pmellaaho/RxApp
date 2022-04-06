@@ -27,7 +27,7 @@ fun RepoInputScreen(viewModel: ContributorsViewModel) {
     val state: ContributorsViewModel.ViewState by viewModel.state.observeAsState(initial = EnterRepo)
     var text by rememberSaveable { mutableStateOf("") }
     val onTextChanged: (String) -> Unit = { text = it }
-    val onClickListener: (String) -> Unit = { viewModel.fetchContributors(it) }
+    val onClickListener: (String) -> Unit = { viewModel.setRepo(it) }
 
     when (state) {
         is Loading -> ProgressIndicator()
