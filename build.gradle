@@ -8,17 +8,16 @@ buildscript {
         targetSdkVersion = 31
 
         // App dependencies
-        gradleVersion = '7.0.4'
-        kotlinVersion = '1.5.31'
+        gradleVersion = '7.1.3'
+        kotlinVersion = '1.6.10'
         androidxLifecycleVersion = '2.4.0'
         coroutinesVersion = '1.5.2'
         hiltVersion = '2.39'
 
-        composeVersion = '1.0.5'
-        composeRuntimeVersion = '1.1.0-beta03'
+        composeVersion = '1.2.0-alpha07'
         composeActivityVersion = '1.4.0'
-        composeNavigationVersion = '2.4.0-beta02'
-        materialComposeAdapterVersion = '1.1.0'
+        composeNavigationVersion = '2.4.2'
+        materialComposeAdapterVersion = '1.1.6'
         coreTestingVersion = '2.1.0'
     }
     repositories {
