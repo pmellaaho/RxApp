@@ -80,7 +80,7 @@ dependencies {
     implementation 'androidx.activity:activity-compose'
 
     implementation "androidx.navigation:navigation-compose:$rootProject.composeNavigationVersion"
-    implementation "com.google.android.material:compose-theme-adapter:$rootProject.materialComposeAdapterVersion"
+    implementation "com.google.accompanist:accompanist-themeadapter-material:$rootProject.accompanistVersion"
 
     // Square dependencies
     implementation 'com.squareup.okhttp3:okhttp:4.10.0'
